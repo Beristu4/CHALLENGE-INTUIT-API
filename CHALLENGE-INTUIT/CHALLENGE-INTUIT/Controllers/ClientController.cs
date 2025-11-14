@@ -8,7 +8,7 @@ namespace CHALLENGE_INTUIT.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class ClientController : Controller
+    public class ClientController : ControllerBase
     {
         private readonly ClientService _clientService;
         public ClientController(ClientService clientService) 
@@ -21,20 +21,33 @@ namespace CHALLENGE_INTUIT.Controllers
         {
             var result = await _clientService.GetAll();
 
-            return Ok(result);
+            if(result == null) NotFound("No se encontraron Clientes");
+
+            return Ok(result ?? new List<GetAllDto>()) ;
         }
 
-
-        [HttpGet("getById/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<GetByIdDto>> GetById(int id)
         {
             var result = await _clientService.GetById(id);
 
+            if (result == null) NotFound($"No se Cliente que coincida con {id}");
+
+            return Ok(result);
+        }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<GetByIdDto>> GetByName([FromQuery] string name)
+        {
+            var result = await _clientService.Search(name);
+
+            if (result == null) NotFound($"No se Cliente que coincida con {name}");
+
             return Ok(result);
         }
 
 
-        [HttpPost("insert")]
+        [HttpPost]
         public async Task<ActionResult<CreateClientDto>> Insert(CreateClientDto dto)
         {
             var result = await _clientService.Insert(dto);
@@ -42,7 +55,7 @@ namespace CHALLENGE_INTUIT.Controllers
             return Ok(result);
         }
 
-        [HttpPut("update")]
+        [HttpPut]
         public async Task<ActionResult<UpdateClientDto>> Update(UpdateClientDto dto)
         {
             var result = await _clientService.Update(dto);

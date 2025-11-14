@@ -33,11 +33,6 @@ namespace CHALLENGE_INTUIT.Service
                     })
                     .ToListAsync();
 
-                if (dtoMap == null)
-                {
-                    throw new Exception($"No se encontraron clientes");
-                }
-
                 return dtoMap;
 
             }
@@ -60,21 +55,14 @@ namespace CHALLENGE_INTUIT.Service
                         Name = r.Name,
                         Adress = r.Adress,
                         Cuit = r.Cuit,
-                        DateOfBirth = r.DateOfBirth.HasValue ? r.DateOfBirth.Value.ToString("dd/MM/yyyy") : "" ,
+                        DateOfBirth = r.DateOfBirth,
                         Email = r.Email,
                         LastName = r.LastName,
                         Telephone = r.Telephone
                     })
                     .FirstOrDefaultAsync(c => c.Id == id);
 
-                if(dtoMapById == null)
-                {
-                    throw new Exception($"No existe cliente que coincida con ID : {id}");
-                }
-
                 return dtoMapById;
-
-
             }
             catch(Exception ex)
             {
@@ -108,9 +96,7 @@ namespace CHALLENGE_INTUIT.Service
             {
                 throw new Exception($"Error al crear el cliente: {ex.Message}", ex);
             }
-
         }
-
 
         public async Task<List<GetSearchByNameDto>> Search(string name)
         {
@@ -137,11 +123,6 @@ namespace CHALLENGE_INTUIT.Service
 
                     }).ToListAsync();
 
-                if(clientByName == null)
-                {
-                    throw new Exception($"No se encontraron cliente que coincidan con {name}");
-                }
-
                 return clientByName;
 
             }catch(Exception ex)
@@ -149,7 +130,6 @@ namespace CHALLENGE_INTUIT.Service
                 throw new Exception($"Error al buscar por nombre: {ex.Message}", ex);
             }
         }
-
 
         public async Task<Clients> Update(UpdateClientDto client)
         {
@@ -187,7 +167,6 @@ namespace CHALLENGE_INTUIT.Service
             }
         }
 
-
         public Task ValidateRegex(string cuit, string telephone, string email)
         {
             if (!Regex.IsMatch(cuit, @"^\d{2}\d{8}\d{1}$"))
@@ -201,6 +180,5 @@ namespace CHALLENGE_INTUIT.Service
 
             return Task.CompletedTask;
         }
-
     }
 }

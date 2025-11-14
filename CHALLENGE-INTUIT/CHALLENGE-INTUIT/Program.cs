@@ -3,6 +3,19 @@ using CHALLENGE_INTUIT.Service;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+//Agregamos cors para el front 
+builder.Services.AddCors(option =>
+{
+    option.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+        });
+});
+
 //Creamos la conexion a la base de datos
 builder.Services.AddDbContext<MyContext>(option =>
 {
@@ -11,7 +24,6 @@ builder.Services.AddDbContext<MyContext>(option =>
 
 //Registramos el servicio
 builder.Services.AddScoped<ClientService>();
-
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -23,6 +35,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseCors("AllowReactApp");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -30,10 +44,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();//fuerza que corran los http en https para reforzar la seguridad 
 
-app.UseAuthorization();//habilidate el middelware de autorizacion
+app.UseHttpsRedirection();
 
-app.MapControllers();//mapea los controladores ,hace que los endpoint respondan a las rutas http
+app.UseAuthorization();
 
-app.Run();//corre la aplicacion, inicia el servidor y hace que la aplicacoin escuche el puerto configurado
+app.MapControllers();
+
+app.Run();
