@@ -109,7 +109,7 @@ namespace CHALLENGE_INTUIT.Service
 
                 var clientByName = await _myContext.Clients
                     .AsNoTracking()
-                    .Where(c => c.Name.Contains(name))
+                    .Where(c => c.Name.ToLower().Contains(name.ToLower()))
                     .Select(r => new GetSearchByNameDto
                     {
                         Id = r.Id,
